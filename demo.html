@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="jquery.validator.css">
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <title></title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form id="validate-form" novalidate="novalidate" >
+                <div class="form-group">
+                    <label for="exampleInputEmail">Email address</label>
+                    <input type="email" name="mail1" class="form-control" id="exampleInputEmail" placeholder="Enter email" validator="email required">
+                </div>
+                <div class="form-group">
+                    <label for="hallo">Hi!</label>
+                    <input type="text"  name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'"  validator="hallo" >
+                </div>
+
+                <div>
+                    <label>Ingredients</label>
+                    <div class="checkbox">
+                        <label>
+                            <input id="check" type="checkbox" name="foods[]" value="bread" validator="required"> bread
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="foods[]" value="tomato"> tomato
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="foods[]" value="cheese"> cheese
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="jquery.validator.js"></script>
+<script>
+
+    var myFunction = function(elem){
+        if(elem.val()=="hallo"){
+            return true
+        }
+        else {
+            return false
+        }
+    };
+
+
+var al1 = function(x){
+    var counter = 0;
+    for(var i =0;i< x.length;i++){
+        if(x[i].checked){
+            counter++;
+        }
+    }
+    return counter>0
+};
+
+    $("#validate-form").validator();
+    $("#validate-form").validator('addCustomValidator', ["hallo",myFunction,"This is not the right input"]);
+
+
+</script>
+</body>
+</html>
