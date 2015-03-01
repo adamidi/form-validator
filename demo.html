@@ -17,14 +17,14 @@
                 </div>
                 <div class="form-group">
                     <label for="hallo">Hi!</label>
-                    <input type="text"  name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'"  validator="hallo" >
+                    <input type="text"  name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'"  validator="hallo required" >
                 </div>
 
-                <div>
+                <div group-validator="atleastone">
                     <label>Ingredients</label>
                     <div class="checkbox">
                         <label>
-                            <input id="check" type="checkbox" name="foods[]" value="bread" validator="required"> bread
+                            <input id="check" type="checkbox" name="foods[]" value="bread" validator=""> bread
                         </label>
                     </div>
                     <div class="checkbox">
@@ -51,8 +51,10 @@
 <script src="jquery.validator.js"></script>
 <script>
 
+    console.log($('#exampleInputEmail').is(':checked'))
+
     var myFunction = function(elem){
-        if(elem.val()=="hallo"){
+        if(elem.val()=="hallo" ||elem.val()=="" ){
             return true
         }
         else {
@@ -72,7 +74,8 @@ var al1 = function(x){
 };
 
     $("#validate-form").validator();
-    $("#validate-form").validator('addCustomValidator', ["hallo",myFunction,"This is not the right input"]);
+    $("#validate-form").validator('addValidator', ["hallo",myFunction,"This is not the right input"]);
+    $("#validate-form").validator('addGroupValidator', ["atleastone",al1,"Check at least one checkbox"]);
 
 
 </script>
