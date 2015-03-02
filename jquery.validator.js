@@ -48,10 +48,10 @@
         //method for checking required fields or checkboxes
         var checkRequired =  function(e){
             required.each(function(){
-                if(!$(this).val() || !$(this).is(':checked')){
+                if(!$(this).val()){
                     e.preventDefault();
                     var error = '<span class="error-msg">'+ plugin.options.errorMsgs.required +'</span>' ;
-                    $(this).parent().children('.error-msg').remove()
+                    $(this).parent().children('.error-msg').remove();
                     $(this).parent().append(error);
                 }
             });
