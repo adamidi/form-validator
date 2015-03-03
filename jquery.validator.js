@@ -15,26 +15,82 @@
 
     //plugin constructor
     var Validator = function(element,options){
-        this.element = element;
-        this.options= $.extend({},defaults,options);
+        this.form = $(element);
         this._defaults = defaults;
+        this.options= $.extend(true,this._defaults,options);
         this._name = pluginName;
         this.init();
     };
 
     //method for adding custom validator
-    Validator.prototype.addCustomValidator = function(value,func,msg){
-        var txt = $("[validator *= "+value+"]");
-        txt.each(function(){
-            var parent = $(this).parent();
-            $(this).on("input",function(){
-                if(!func($(this))){
-                    parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
-                    parent.append('<span class="error-msg">'+msg+'</span>');
+    Validator.prototype.addValidator = function(value,func,msg){
+        var form = this.form;
+        //select every input whose "validator" attribute contains "value"
+        var inputs = $("[validator *= "+value+"]");
+        inputs.each(function(){
+            var input = $(this);
+            //If the validation function returns false, error style is added, any error msg is removed, and the validator-specific msg is added
+            //If the validation function returns true, success style is added and validator-specific msg is removed ONLY if this msg exists
+            var validationFunction = function(elem){
+                if(!func(elem)){
+//                    console.log(value +" puts error")
+                    elem.parent().removeClass("has-success").addClass("has-error").children('.error-msg').remove();
+                    elem.parent().append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
+                    return false;
                 }
                 else{
-                    parent.removeClass("has-error").addClass("has-success").children('.error-msg').remove();
+                    if(elem.parent().children('.validator-'+value).length>0){
+//                        console.log(value + " adds success")
+                        elem.parent().removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
+                    }
+                    return true;
                 }
+            };
+
+            //The validators run on input and on form submission, preventing submit
+            input.on("input", function(){
+                validationFunction(input);
+            });
+            form.on("submit", function(event){
+                if(!validationFunction(input)){
+                    event.preventDefault();
+
+                }
+            });
+        });
+    };
+
+    // method for adding group validator, similar to addValidator function
+    Validator.prototype.addGroupValidator = function(value,func,msg){
+        var form = this.form;
+        var parents = $("[group-validator *= "+value+"]");
+        parents.each(function(){
+            var parent = $(this);
+            var inputs = parents.find("input");
+            inputs.each(function(){
+                var input = $(this);
+                var multiValidationFunction = function(elementarray){
+                    if(!func(elementarray)){
+                        parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
+                        parent.append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
+                        return false;
+                    }
+                    else{
+                        if(parent.children('.validator-'+value).length>0){
+                            parent.removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
+                        }
+                        return true;
+                    }
+                };
+                input.on("change", function(){
+                    multiValidationFunction(inputs);
+                });
+                form.on("submit", function(event){
+                    if(!multiValidationFunction(inputs)){
+                        event.preventDefault();
+                    }
+                });
+
             });
         });
     };
@@ -42,50 +98,44 @@
     //initialize the plugin
     Validator.prototype.init = function(){
         var plugin = this;
-        var form  = $(this.element);
-        var required = $("[validator*='required']");
 
-        //method for checking required fields or checkboxes
-        var checkRequired =  function(e){
-            required.each(function(){
-                if(!$(this).val()){
-                    e.preventDefault();
-                    var error = '<span class="error-msg">'+ plugin.options.errorMsgs.required +'</span>' ;
-                    $(this).parent().children('.error-msg').remove();
-                    $(this).parent().append(error);
+        //add required validator
+        this.addValidator("required",
+            function(elem){
+                var type = elem.attr("type");
+                if(type=="checkbox"){
+                    return elem.is(':checked');
                 }
-            });
-        };
+                else {
+                    return elem.val();
+                }
+            },
+            plugin.options.errorMsgs.required
+        );
 
-        //add validator for emails
-        this.addCustomValidator("email",
+
+        //add email validator
+        this.addValidator("email",
             function(elem){
                 var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return emailRe.test(elem.val());
+                return emailRe.test(elem.val()) || !elem.val();
             },
             plugin.options.errorMsgs.email
         );
-
-        //validate on submit
-        form.submit(function(event){
-            checkRequired(event);
-            var errors = form.find(".has-error");
-            if(errors.length>0) {
-                event.preventDefault();
-            }
-        });
     };
 
 
-    $.fn[pluginName] = function (optionsOrFunction, arguments) {
-        if(optionsOrFunction == 'addCustomValidator'){
-            $(this).data('plugin_'+pluginName).addCustomValidator(arguments[0], arguments[1], arguments[2]);
-        } else {
+    $.fn[pluginName] = function (optionsOrFunction, args) {
+        if(optionsOrFunction == 'addValidator'){
+            $(this).data('plugin_'+pluginName).addValidator(args[0], args[1], args[2]);
+        }else if(optionsOrFunction == 'addGroupValidator'){
+            $(this).data('plugin_'+pluginName).addGroupValidator(args[0], args[1], args[2]);
+        }
+        else {
             return this.each(function () {
-                $.data(this,'plugin_'+pluginName, new Validator(this,optionsOrFunction))
+                $.data(this,'plugin_'+pluginName, new Validator(this,optionsOrFunction));
             });
         }
     };
-
 
 }(jQuery));
