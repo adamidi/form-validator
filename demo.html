@@ -10,21 +10,23 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <form id="validate-form" novalidate="novalidate" >
+            <form id="validate-form" novalidate="novalidate">
                 <div class="form-group">
                     <label for="exampleInputEmail">Email address</label>
-                    <input type="email" name="mail1" class="form-control" id="exampleInputEmail" placeholder="Enter email" validator="email required">
+                    <input type="email" name="mail1" class="form-control" id="exampleInputEmail"
+                           placeholder="Enter email (required)" validator="email required">
                 </div>
                 <div class="form-group">
                     <label for="hallo">Hi!</label>
-                    <input type="text"  name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'"  validator="hallo required" >
+                    <input type="text" name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'" validator="hallo ">
                 </div>
 
                 <div group-validator="atleastone">
                     <label>Ingredients</label>
+
                     <div class="checkbox">
                         <label>
-                            <input id="check" type="checkbox" name="foods[]" value="bread" validator=""> bread
+                            <input id="check" type="checkbox" name="foods[]" value="bread"> bread
                         </label>
                     </div>
                     <div class="checkbox">
@@ -46,15 +48,13 @@
 </div>
 
 
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="jquery.validator.js"></script>
 <script>
 
-    console.log($('#exampleInputEmail').is(':checked'))
-
-    var myFunction = function(elem){
-        if(elem.val()=="hallo" ||elem.val()=="" ){
+    // Custom  function that also allows empty input
+    var myFunction = function (elem) {
+        if (elem.val() == "hallo" || elem.val() == "") {
             return true
         }
         else {
@@ -63,19 +63,20 @@
     };
 
 
-var al1 = function(x){
-    var counter = 0;
-    for(var i =0;i< x.length;i++){
-        if(x[i].checked){
-            counter++;
+    // Custom function for multiple inputs, it won't allow empty input
+    var al1 = function (x) {
+        var counter = 0;
+        for (var i = 0; i < x.length; i++) {
+            if (x[i].checked) {
+                counter++;
+            }
         }
-    }
-    return counter>0
-};
+        return counter > 0
+    };
 
-    $("#validate-form").validator();
-    $("#validate-form").validator('addValidator', ["hallo",myFunction,"This is not the right input"]);
-    $("#validate-form").validator('addGroupValidator', ["atleastone",al1,"Check at least one checkbox"]);
+    $("#validate-form").validator({errorMsgs: {email: "Custom msg :  This is not an email"}});
+    $("#validate-form").validator('addValidator', ["hallo", myFunction, "This is not the right input"]);
+    $("#validate-form").validator('addGroupValidator', ["atleastone", al1, "Check at least one checkbox"]);
 
 
 </script>

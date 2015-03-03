@@ -16,8 +16,8 @@
     //plugin constructor
     var Validator = function(element,options){
         this.form = $(element);
-        this.options= $.extend({},defaults,options);
         this._defaults = defaults;
+        this.options= $.extend(true,this._defaults,options);
         this._name = pluginName;
         this.init();
     };
@@ -25,50 +25,72 @@
     //method for adding custom validator
     Validator.prototype.addValidator = function(value,func,msg){
         var form = this.form;
+        //select every input whose "validator" attribute contains "value"
         var inputs = $("[validator *= "+value+"]");
         inputs.each(function(){
-            var parent = $(this).parent();
+            var input = $(this);
+            //If the validation function returns false, error style is added, any error msg is removed, and the validator-specific msg is added
+            //If the validation function returns true, success style is added and validator-specific msg is removed ONLY if this msg exists
             var validationFunction = function(elem){
                 if(!func(elem)){
-                    parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
-                    parent.append('<span class="error-msg">'+msg+'</span>');
+//                    console.log(value +" puts error")
+                    elem.parent().removeClass("has-success").addClass("has-error").children('.error-msg').remove();
+                    elem.parent().append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
                     return false
                 }
                 else{
-                    if(parent.hasClass("has-error")){
-                        parent.removeClass("has-error").addClass("has-success").children('.error-msg').remove();
+                    if(elem.parent().children('.validator-'+value).length>0){
+//                        console.log(value + " adds success")
+                        elem.parent().removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
                     }
                     return true
                 }
             };
 
-            $(this).on("input", function(){
-                validationFunction($(this))
+            //The validators run on input and on form submission, preventing submit
+            input.on("input", function(){
+                validationFunction(input)
             });
             form.on("submit", function(event){
-                if(!validationFunction($(this))){
+                if(!validationFunction(input)){
                     event.preventDefault();
+
                 }
             });
         });
     };
 
+    // method for adding group validator, similar to addValidator function
     Validator.prototype.addGroupValidator = function(value,func,msg){
+        var form = this.form;
         var parents = $("[group-validator *= "+value+"]");
         parents.each(function(){
             var parent = $(this);
             var inputs = parents.find("input");
             inputs.each(function(){
-                $(this).on("change",function(){
-                    console.log(this)
-                    if(!func(inputs)){
+                var input = $(this);
+                var multiValidationFunction = function(elementarray){
+                    if(!func(elementarray)){
                         parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
-                        parent.append('<span class="error-msg">'+msg+'</span>');
+                        parent.append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
+                        return false
                     }
                     else{
-                        parent.removeClass("has-error").addClass("has-success").children('.error-msg').remove();
+                        if(parent.children('.validator-'+value).length>0){
+                            parent.removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
+                        }
+                        return true
+                    }
+                };
+                input.on("change", function(){
+                    multiValidationFunction(inputs)
+                });
+                form.on("submit", function(event){
+                    if(!multiValidationFunction(inputs)){
+                        event.preventDefault();
                     }
                 });
+
             });
         });
     };
@@ -78,19 +100,7 @@
         var plugin = this;
         var required = $("[validator*='required']");
 
-        //method for checking required fields or checkboxes
-        var checkRequired = function(e){
-            required.each(function(){
-                if(!$(this).val() || !$(this).is(':checked')){
-                    e.preventDefault();
-                    var error = '<span class="error-msg">'+ plugin.options.errorMsgs.required +'</span>' ;
-                    $(this).parent().children('.error-msg').remove();
-                    $(this).parent().append(error);
-                }
-            });
-        };
-
-        //add validator required
+        //add required validator
         this.addValidator("required",
             function(elem){
                 var type = elem.attr("type");
@@ -100,13 +110,12 @@
                 else {
                     return elem.val();
                 }
-
             },
             plugin.options.errorMsgs.required
         );
 
 
-        //add validator for emails
+        //add email validator
         this.addValidator("email",
             function(elem){
                 var emailRe = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -114,15 +123,6 @@
             },
             plugin.options.errorMsgs.email
         );
-
-        //validate on submit
-//        this.form.submit(function(event){
-////            checkRequired(event);
-//            var errors = this.form.find(".has-error");
-//            if(errors.length>0) {
-//                event.preventDefault();
-//            }
-//        });
     };
 
 
@@ -138,6 +138,5 @@
             });
         }
     };
-
 
 }(jQuery));
