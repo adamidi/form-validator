@@ -36,20 +36,20 @@
 //                    console.log(value +" puts error")
                     elem.parent().removeClass("has-success").addClass("has-error").children('.error-msg').remove();
                     elem.parent().append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
-                    return false
+                    return false;
                 }
                 else{
                     if(elem.parent().children('.validator-'+value).length>0){
 //                        console.log(value + " adds success")
                         elem.parent().removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
                     }
-                    return true
+                    return true;
                 }
             };
 
             //The validators run on input and on form submission, preventing submit
             input.on("input", function(){
-                validationFunction(input)
+                validationFunction(input);
             });
             form.on("submit", function(event){
                 if(!validationFunction(input)){
@@ -73,17 +73,17 @@
                     if(!func(elementarray)){
                         parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
                         parent.append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
-                        return false
+                        return false;
                     }
                     else{
                         if(parent.children('.validator-'+value).length>0){
                             parent.removeClass("has-error").addClass("has-success").children('.validator-'+value).remove();
                         }
-                        return true
+                        return true;
                     }
                 };
                 input.on("change", function(){
-                    multiValidationFunction(inputs)
+                    multiValidationFunction(inputs);
                 });
                 form.on("submit", function(event){
                     if(!multiValidationFunction(inputs)){
@@ -98,14 +98,13 @@
     //initialize the plugin
     Validator.prototype.init = function(){
         var plugin = this;
-        var required = $("[validator*='required']");
 
         //add required validator
         this.addValidator("required",
             function(elem){
                 var type = elem.attr("type");
                 if(type=="checkbox"){
-                    return elem.is(':checked')
+                    return elem.is(':checked');
                 }
                 else {
                     return elem.val();
@@ -126,15 +125,15 @@
     };
 
 
-    $.fn[pluginName] = function (optionsOrFunction, arguments) {
+    $.fn[pluginName] = function (optionsOrFunction, args) {
         if(optionsOrFunction == 'addValidator'){
-            $(this).data('plugin_'+pluginName).addValidator(arguments[0], arguments[1], arguments[2]);
+            $(this).data('plugin_'+pluginName).addValidator(args[0], args[1], args[2]);
         }else if(optionsOrFunction == 'addGroupValidator'){
-            $(this).data('plugin_'+pluginName).addGroupValidator(arguments[0], arguments[1], arguments[2]);
+            $(this).data('plugin_'+pluginName).addGroupValidator(args[0], args[1], args[2]);
         }
         else {
             return this.each(function () {
-                $.data(this,'plugin_'+pluginName, new Validator(this,optionsOrFunction))
+                $.data(this,'plugin_'+pluginName, new Validator(this,optionsOrFunction));
             });
         }
     };
