@@ -69,15 +69,15 @@ Don't forget to include your attribute value to the html.
 ### Add your own group validator ###
 
 In this case, the only difference from adding single input validators is that:
-	- the attribute used now is "group-validator" instead of "validator"
-	- the attribute "group-validator" is added to the parent of the input group
-	- the custom validation function takes as argument an array of elements
-	- you have to call addGroupValidator instead of addValidator
+- the attribute used now is "group-validator" instead of "validator"
+- the attribute "group-validator" is added to the parent of the input group
+- the custom validation function takes as argument an array of elements
+- you have to call addGroupValidator instead of addValidator
 
 So, to add your own group validator you need :
-	- a function that takes an array of jQuery elements as input and returns true or false
-	- a value for the "group-validator" attribute
-	- an error message
+- a function that takes an array of jQuery elements as input and returns true or false
+- a value for the "group-validator" attribute
+- an error message
 
 Firstly define your function :
 
