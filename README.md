@@ -45,7 +45,7 @@ To add your own validator you need :
 Firstly define your function :
 
 ```js
-function myFunction(elem) = {..returns true or false..}
+function myFunction(elem) {..returns true or false..}
 ```
 
 *Note*: If you want a field to be optional, then you have to include this in your function's logic so that it returns true also for blank inputs.
@@ -80,7 +80,7 @@ So, to add your own group validator you need :
 Firstly define your function :
 
 ```js
-function myGroupFunction(elementArray) = {..returns true or false..}
+function myGroupFunction(elementArray) {..returns true or false..}
 ```
 
 And then call the addGroupValidator function of the plugin using this syntax:
