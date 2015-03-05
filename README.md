@@ -1,9 +1,7 @@
-jQuery Validator plugin
+ Bootstrap Validator jQuery plugin
 =======================
 
 Bootstrap form validator jQuery plugin that allows you to add your own custom validators, for single or multiple inputs.
-
-Currently there are only two built-in validators: email and required.
 
 How to use
 ----------
@@ -11,7 +9,7 @@ How to use
 ### The "validator" attribute ###
 
 The way the plugin identifies which fields should be validated by which validator, is by using its own custom attribute.
-So for the validation of an input, you have to include the "validator" attribute adding as value the name of the validator :
+So, just include the "validator" attribute adding as value the name of the validator :
 
 ```html
 <input type="text" validator="required">
@@ -39,15 +37,15 @@ $("#formId").validator({errorMsgs: {email: "my msg"}});
 
 ### Add custom validator ###
 
-To add your own validator you need three things : 
-	- a function that takes a jquery element as input and returns true or false
-	- a value for the "validator" attribute by which the plugin can recognize which inputs are going to be validated with your function
-	- an error message
+To add your own validator you need :
+- a function that takes a jquery element as input and returns true or false
+- a value for the "validator" attribute by which the plugin can recognize which inputs are going to be validated with your function
+- an error message
 
 Firstly define your function :
 
 ```js
-var myFunction(elem) = {..returns true or false..}
+function myFunction(elem) = {..returns true or false..}
 ```
 
 *Note*: If you want a field to be optional, then you have to include this in your function's logic so that it returns true also for blank inputs.
@@ -82,7 +80,7 @@ So, to add your own group validator you need :
 Firstly define your function :
 
 ```js
-var myGroupFunction(elementArray) = {..returns true or false..}
+function myGroupFunction(elementArray) = {..returns true or false..}
 ```
 
 And then call the addGroupValidator function of the plugin using this syntax:
@@ -103,5 +101,20 @@ Also include your attribute value to the html. **The attribute "group-validator"
 </div>
 ```
 
+Options
+-------
 
+The available default options are the error messages for the built-in validators:
 
+```js
+errorMsgs: {
+                email: "This is not an email",
+                required: "This field is required"
+            }
+```
+
+To change them, call the plugin like this:
+
+```js
+$("#formId").validator({errorMsgs: {email: "my msg"}});
+```
