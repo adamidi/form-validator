@@ -21,25 +21,46 @@
                     <input type="text" name="hallo" class="form-control" id="hallo" placeholder="Enter 'hallo'" validator="hallo ">
                 </div>
 
-                <div group-validator="atleastone">
-                    <label>Ingredients</label>
-
-                    <div class="checkbox">
-                        <label>
-                            <input id="check" type="checkbox" name="foods[]" value="bread"> bread
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="foods[]" value="tomato"> tomato
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="foods[]" value="cheese"> cheese
-                        </label>
-                    </div>
+                <div class="form-group ">
+                    <label for="card">card</label>
+                    <select class="form-control" id="card" name="usercard" validator="required">
+                        <option value="">choose...</option>
+                        <option value="visa">Visa</option>
+                        <option value="mc">Mastercard</option>
+                        <option value="amex">American Express</option>
+                    </select>
                 </div>
+
+                <div class="form-group ">
+                    <label for="town">town</label>
+                    <div group-validator="atLeastTwoSelect">
+                        <select class="form-control" id="town" name="town" multiple>
+                            <option value="Amsterdam">Amsterdam</option>
+                            <option value="Athens">Athens</option>
+                            <option value="NY">NY</option>
+                        </select>
+                    </div>
+                    </div>
+
+                <div group-validator="atleastone">
+                <label>Ingredients</label>
+
+                <div class="checkbox">
+                    <label>
+                        <input id="check" type="checkbox" name="foods[]" value="bread"> bread
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="foods[]" value="tomato"> tomato
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="foods[]" value="cheese"> cheese
+                    </label>
+                </div>
+            </div>
 
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>
@@ -74,9 +95,20 @@
         return counter > 0
     };
 
+    var atLeastTwoSelect = function (x) {
+        var counter = 0;
+        for (var i = 0; i < x.length; i++) {
+            if (x[i].selected) {
+                counter++;
+            }
+        }
+        return counter > 1
+    };
+
     $("#validate-form").validator({errorMsgs: {email: "Custom msg :  This is not an email"}});
     $("#validate-form").validator('addValidator', ["hallo", myFunction, "This is not the right input"]);
     $("#validate-form").validator('addGroupValidator', ["atleastone", al1, "Check at least one checkbox"]);
+    $("#validate-form").validator('addGroupValidator', ["atLeastTwoSelect", atLeastTwoSelect, "Select at least two options"]);
 
 
 </script>

@@ -1,6 +1,3 @@
-/**
- * Created by efi on 27/2/2015.
- */
 
 ;(function ($) {
 
@@ -35,7 +32,7 @@
                 if(!func(elem)){
 //                    console.log(value +" puts error")
                     elem.parent().removeClass("has-success").addClass("has-error").children('.error-msg').remove();
-                    elem.parent().append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
+                    elem.parent().append('<span class="error-msg help-block validator-'+value+'">'+msg+'</span>');
                     return false;
                 }
                 else{
@@ -47,8 +44,8 @@
                 }
             };
 
-            //The validators run on input and on form submission, preventing submit
-            input.on("input", function(){
+            //The validators run on events and on form submission, preventing submit
+            input.on("input change click", function(){
                 validationFunction(input);
             });
             form.on("submit", function(event){
@@ -66,13 +63,13 @@
         var parents = $("[group-validator *= "+value+"]");
         parents.each(function(){
             var parent = $(this);
-            var inputs = parents.find("input");
+            var inputs = parent.find("input,option");
             inputs.each(function(){
                 var input = $(this);
                 var multiValidationFunction = function(elementarray){
                     if(!func(elementarray)){
                         parent.removeClass("has-success").addClass("has-error").children('.error-msg').remove();
-                        parent.append('<span class="error-msg validator-'+value+'">'+msg+'</span>');
+                        parent.append('<span class="error-msg help-block validator-'+value+'">'+msg+'</span>');
                         return false;
                     }
                     else{
@@ -82,7 +79,7 @@
                         return true;
                     }
                 };
-                input.on("change", function(){
+                input.on("input change click", function(){
                     multiValidationFunction(inputs);
                 });
                 form.on("submit", function(event){
